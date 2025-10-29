@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.ay.demir.kuran.kelime.KelimeMeal;
 import org.ay.demir.kuran.meal.Meal;
+import org.ay.demir.kuran.mushaf.Mushaf;
 
 import com.monitorjbl.xlsx.StreamingReader;
 
@@ -44,6 +45,37 @@ public class FileUtils {
 		}
 
 		return sureMap;
+	}
+
+	public static List<Mushaf> uploadMushafFromTxtFile() throws IOException {
+
+		InputStream is = FileUtils.class.getClassLoader().getResourceAsStream("quran-simple-plain (1).txt");
+		InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
+		BufferedReader br = new BufferedReader(streamReader);
+
+		List<Mushaf> mushafList = new ArrayList<Mushaf>();
+
+		try {
+
+			for (String line; (line = br.readLine()) != null;) {
+
+				int firsIndex = line.indexOf("|");
+				int lastIndex = line.lastIndexOf("|");
+
+				Integer sureNo = Integer.parseInt(line.substring(0, firsIndex));
+				Integer ayetNo = Integer.parseInt(line.substring(firsIndex + 1, lastIndex));
+				String ayet = line.substring(lastIndex + 1);
+				Mushaf m = new Mushaf(sureNo, ayetNo, ayet);
+				mushafList.add(m);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			mushafList = new ArrayList<Mushaf>();
+		} finally {
+			br.close();
+		}
+
+		return mushafList;
 	}
 
 	public static List<Meal> uploadMealFromTxtFile(String p_strFileName, String p_strYazar) throws IOException {
