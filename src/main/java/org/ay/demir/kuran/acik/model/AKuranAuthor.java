@@ -7,7 +7,7 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "a_author", schema = "kuran", uniqueConstraints = { @UniqueConstraint(columnNames = { "id" }) })
-public class AKuranAuthor {
+public class AKuranAuthor implements Comparable<AKuranAuthor> {
 
 	private Long id;
 	private String descr;
@@ -47,4 +47,8 @@ public class AKuranAuthor {
 		this.name = name;
 	}
 
+	@Override
+	public int compareTo(AKuranAuthor a) {
+		return this.id.compareTo(a.id);
+	}
 }

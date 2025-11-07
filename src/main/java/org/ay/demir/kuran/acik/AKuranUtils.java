@@ -58,6 +58,40 @@ public class AKuranUtils {
 		return resultList;
 	}
 
+	public static void downloadSurahs(EntityManager entityManager) throws IOException, InterruptedException {
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + surahs)).GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode root = new ObjectMapper().readTree(response.body());
+
+		for (JsonNode item : root.get("data")) {
+			AKuranSurah surah = new AKuranSurah();
+			surah.setId(item.get("id").asLong());
+			surah.setNameTr(item.get("name").asText());
+			surah.setNameEng(item.get("name_en").asText());
+			surah.setVerseCount(item.get("verse_count").asInt());
+			surah.setPageNumber(item.get("page_number").asInt());
+			surah.setNameArabic(item.get("name_original").asText());
+			entityManager.merge(surah);
+
+			JsonNode audioNode = item.get("audio");
+			AKuranAudio audio = new AKuranAudio();
+			audio.setMp3(audioNode.get("mp3").asText());
+			audio.setDuration(audioNode.get("duration").asInt());
+			audio.setMp3En(audioNode.get("mp3_en").asText());
+			audio.setDurationEn(audioNode.get("duration_en").asInt());
+			audio.setSurahId(surah.getId());
+			entityManager.merge(audio);
+		}
+
+		entityManager.flush();
+		entityManager.clear();
+	}
+
 	public static List<AKuranRootChars> downloadRootChars() {
 
 		List<AKuranRootChars> resultList = new ArrayList<AKuranRootChars>();
@@ -137,49 +171,6 @@ public class AKuranUtils {
 		}
 
 		return new ArrayList<AKuranRoots>();
-	}
-
-	public static List<AKuranSurah> downloadSurahs() {
-		List<AKuranSurah> resultList = new ArrayList<AKuranSurah>();
-
-		try {
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + surahs)).GET().build();
-
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			for (JsonNode item : root.get("data")) {
-				AKuranSurah author = new AKuranSurah();
-				author.setId(item.get("id").asLong());
-				author.setName(item.get("name").asText());
-				author.setNameEng(item.get("name_en").asText());
-				author.setSlug(item.get("slug").asText());
-				author.setVerseCount(item.get("verse_count").asInt());
-				author.setPageNumber(item.get("page_number").asInt());
-				author.setNameArabic(item.get("name_original").asText());
-
-				JsonNode audioNode = item.get("audio");
-				AKuranAudio audio = new AKuranAudio();
-				audio.setMp3(audioNode.get("mp3").asText());
-				audio.setDuration(audioNode.get("duration").asInt());
-				audio.setMp3En(audioNode.get("mp3_en").asText());
-				audio.setDurationEn(audioNode.get("duration_en").asInt());
-				author.setAudio(audio);
-
-				resultList.add(author);
-			}
-
-			return resultList;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return new ArrayList<AKuranSurah>();
 	}
 
 	public static List<AKuranVerses> downloadTransFootNotesOnly(Long surahId, Long authorId,
