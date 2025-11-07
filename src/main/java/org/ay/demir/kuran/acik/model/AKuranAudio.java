@@ -7,10 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "a_audio", schema = "kuran", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }) })
+@Table(name = "a_audio", schema = "kuran")
 public class AKuranAudio {
 
 	private Long id;

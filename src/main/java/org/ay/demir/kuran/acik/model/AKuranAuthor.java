@@ -3,10 +3,9 @@ package org.ay.demir.kuran.acik.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "a_author", schema = "kuran", uniqueConstraints = { @UniqueConstraint(columnNames = { "id" }) })
+@Table(name = "a_author", schema = "kuran")
 public class AKuranAuthor implements Comparable<AKuranAuthor> {
 
 	private Long id;

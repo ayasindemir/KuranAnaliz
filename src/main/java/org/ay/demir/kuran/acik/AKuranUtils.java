@@ -92,35 +92,26 @@ public class AKuranUtils {
 		entityManager.clear();
 	}
 
-	public static List<AKuranRootChars> downloadRootChars() {
+	public static List<AKuranRootChars> downloadRootChars() throws IOException, InterruptedException {
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + rootchars)).GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode rootChars = new ObjectMapper().readTree(response.body());
 
 		List<AKuranRootChars> resultList = new ArrayList<AKuranRootChars>();
-
-		try {
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + rootchars)).GET().build();
-
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			for (JsonNode item : root.get("data")) {
-				AKuranRootChars rootChar = new AKuranRootChars();
-				rootChar.setId(item.get("id").asLong());
-				rootChar.setLatin(item.get("latin").asText());
-				rootChar.setArabic(item.get("arabic").asText());
-				resultList.add(rootChar);
-			}
-
-			return resultList;
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (JsonNode item : rootChars.get("data")) {
+			AKuranRootChars rootChar = new AKuranRootChars();
+			rootChar.setId(item.get("id").asLong());
+			rootChar.setLatin(item.get("latin").asText());
+			rootChar.setArabic(item.get("arabic").asText());
+			resultList.add(rootChar);
 		}
 
-		return new ArrayList<AKuranRootChars>();
+		return resultList;
 	}
 
 	public static List<AKuranRoots> downloadRoots(AKuranRootCharsService rootCharService, int pRootId) {
