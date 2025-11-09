@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -99,9 +100,10 @@ public class AKuranController {
 		translationService.downloadTranslations();
 	}
 
-	@GetMapping(path = "/verses/getAllTranslations")
-	public ResponseEntity<List<AKuranTranslation>> getAllTranslations() throws Exception {
-		return ResponseEntity.ok(translationService.getAll());
+	@GetMapping(path = "/verses/getTranslationsByAuthor", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AKuranTranslation>> getTranslationsByAuthor(@RequestParam("authorId") Long authorId)
+			throws Exception {
+		return ResponseEntity.ok(translationService.getByAuthorId(authorId));
 	}
 
 }
