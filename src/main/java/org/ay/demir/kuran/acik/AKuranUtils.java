@@ -7,7 +7,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.ay.demir.kuran.acik.model.AKuranAudio;
 import org.ay.demir.kuran.acik.model.AKuranAuthor;
@@ -18,9 +17,7 @@ import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranTransFootNotes;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
-import org.ay.demir.kuran.acik.service.AKuranRootCharsService;
 import org.ay.demir.kuran.acik.service.AKuranTranslationService;
-import org.ay.demir.kuran.acik.service.AKuranVerseService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +29,7 @@ public class AKuranUtils {
 	private static String apiBaseUrl = "https://api.acikkuran.com/";
 	private static String rootchars = "rootchars";
 	private static String authors = "authors";
-	private static String url_root = "root";
+	private static String url_root = "root/";
 	private static String surahs = "surahs";
 
 	public static List<AKuranAuthor> downloadAuthors() throws IOException, InterruptedException {
@@ -114,54 +111,71 @@ public class AKuranUtils {
 		return resultList;
 	}
 
-	public static List<AKuranRoots> downloadRoots(AKuranRootCharsService rootCharService, int pRootId) {
+	public static void downloadVersesOnly(Long surahId, EntityManager entityManager)
+			throws IOException, InterruptedException {
 
-		List<AKuranRoots> resultList = new ArrayList<AKuranRoots>();
+		HttpClient client = HttpClient.newHttpClient();
 
-		try {
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + "surah/" + surahId)).GET().build();
 
-			HttpClient client = HttpClient.newHttpClient();
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + url_root + "/" + pRootId)).GET()
-					.build();
+		JsonNode root = new ObjectMapper().readTree(response.body());
 
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		JsonNode surah = root.get("data");
 
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			for (JsonNode item1 : root.get("data")) {
-				AKuranRoots mRoot = new AKuranRoots();
-				mRoot.setId(item1.get("id").asLong());
-				mRoot.setLatin(item1.get("latin").asText());
-				mRoot.setArabic(item1.get("arabic").asText());
-				mRoot.setTranscription(item1.get("transcription").asText());
-				mRoot.setTranscriptionEng(item1.get("transcription_en").asText());
-				mRoot.setMean(item1.get("mean").asText());
-				mRoot.setMeanEng(item1.get("mean_en").asText());
-
-				Optional<AKuranRootChars> rootChar = rootCharService.findById(item1.get("rootchar_id").asLong());
-				mRoot.setRootCharId(rootChar.isPresent() ? rootChar.get() : null);
-
-				List<AKuranRootDiffs> diffsList = new ArrayList<AKuranRootDiffs>();
-				for (JsonNode itemDiffs : item1.get("diffs")) {
-					AKuranRootDiffs diffs = new AKuranRootDiffs();
-					diffs.setId(itemDiffs.get("id").asLong());
-					diffs.setDiff(itemDiffs.get("diff").asText());
-					diffs.setCount(itemDiffs.get("count").asInt());
-					diffs.setRoots(mRoot);
-					diffsList.add(diffs);
-				}
-				mRoot.setDiffs(diffsList);
-				resultList.add(mRoot);
-			}
-
-			return resultList;
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (JsonNode jVerse : surah.get("verses")) {
+			AKuranVerses verse = new AKuranVerses();
+			verse.setId(jVerse.get("id").asLong());
+			verse.setSurahId(jVerse.get("surah_id").asLong());
+			verse.setVerseNumber(jVerse.get("verse_number").asLong());
+			verse.setVerse(jVerse.get("verse").asText());
+			verse.setPage(jVerse.get("page").asInt());
+			verse.setJuzNumber(jVerse.get("juz_number").asInt());
+			verse.setTranscription(jVerse.get("transcription").asText());
+			entityManager.merge(verse);
+			System.out.println("Surah: " + surah.get("id") + " Verse: " + verse.getVerseNumber());
 		}
 
-		return new ArrayList<AKuranRoots>();
+		entityManager.flush();
+		entityManager.clear();
+	}
+
+	public static void downloadRoots(Long pRootId, EntityManager entityManager)
+			throws IOException, InterruptedException {
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + url_root + pRootId)).GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode root = new ObjectMapper().readTree(response.body());
+
+		for (JsonNode item1 : root.get("data")) {
+			AKuranRoots mRoot = new AKuranRoots();
+			mRoot.setId(item1.get("id").asLong());
+			mRoot.setLatin(item1.get("latin").asText());
+			mRoot.setArabic(item1.get("arabic").asText());
+			mRoot.setMean(item1.get("mean").asText());
+			mRoot.setMeanEng(item1.get("mean_en").asText());
+			mRoot.setRootCharId(item1.get("rootchar_id").asLong());
+			entityManager.merge(mRoot);
+
+			for (JsonNode itemDiffs : item1.get("diffs")) {
+				AKuranRootDiffs diffs = new AKuranRootDiffs();
+				diffs.setId(itemDiffs.get("id").asLong());
+				diffs.setDiff(itemDiffs.get("diff").asText());
+				diffs.setCount(itemDiffs.get("count").asInt());
+				diffs.setRootId(mRoot.getId());
+				entityManager.merge(diffs);
+			}
+
+			entityManager.flush();
+			entityManager.clear();
+
+			System.out.println("roots downloaded for root " + mRoot.getArabic());
+		}
 	}
 
 	public static List<AKuranVerses> downloadTransFootNotesOnly(Long surahId, Long authorId,
@@ -253,43 +267,6 @@ public class AKuranUtils {
 		}
 
 		return new ArrayList<AKuranVerses>();
-	}
-
-	public static void downloadVersesOnly(Long surahId, AKuranVerseService verseService) {
-
-		try {
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + "surah/" + surahId)).GET()
-					.build();
-
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			JsonNode surah = root.get("data");
-
-			for (JsonNode jVerse : surah.get("verses")) {
-				AKuranVerses verse = new AKuranVerses();
-				verse.setId(jVerse.get("id").asLong());
-				verse.setSurahId(jVerse.get("surah_id").asLong());
-				verse.setVerseNumber(jVerse.get("verse_number").asLong());
-				verse.setVerse(jVerse.get("verse").asText());
-				verse.setVerseSimplified(jVerse.get("verse_simplified").asText());
-				verse.setPage(jVerse.get("page").asInt());
-				verse.setJuzNumber(jVerse.get("juz_number").asInt());
-				verse.setTranscription(jVerse.get("transcription").asText());
-				verse.setTranscriptionEng(jVerse.get("transcription_en").asText());
-				verseService.save(verse);
-				System.out.println("Surah: " + surah.get("id") + " Verse: " + verse.getVerseNumber());
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 }
