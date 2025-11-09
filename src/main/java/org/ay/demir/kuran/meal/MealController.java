@@ -23,10 +23,21 @@ public class MealController {
 		mealService.uploadMealFromFile();
 	}
 
+	@GetMapping(path = "getBySureNoAndYazar", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Meal>> getAllBySureNo(@RequestParam("sureNo") Integer sureNo,
+			@RequestParam("yazar") String yazar) {
+		return ResponseEntity.ok(mealService.getAllBySureNoAndYazar(sureNo, yazar));
+	}
+
 	@GetMapping(path = "getBySureNoAndAyetNo", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Meal>> getAllBySureNoAndAyetNo(@RequestParam("sureNo") Integer p_iSureNo,
 			@RequestParam("ayetNo") Integer p_iAyetNo) {
 		return ResponseEntity.ok(mealService.getAllBySureNoAndAyetNo(p_iSureNo, p_iAyetNo));
+	}
+
+	@GetMapping(path = "getByYazar", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Meal>> getByYazar(@RequestParam("yazar") String yazar) {
+		return ResponseEntity.ok(mealService.getByYazar(yazar));
 	}
 
 }

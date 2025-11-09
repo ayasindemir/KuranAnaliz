@@ -17,6 +17,11 @@ public class KelimeMealController {
 	@Autowired
 	private KelimeMealService kuranService;
 
+	@GetMapping(path = "getAllSimple", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SimpleKelimeMeal>> getAllSimple() {
+		return ResponseEntity.ok(kuranService.getAllSimple());
+	}
+	
 	@GetMapping(path = "getBySureNo", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<KelimeMeal>> getBySureNo(@RequestParam("sureNo") String p_strSureNo) {
 		return ResponseEntity.ok(kuranService.getBySureNo(p_strSureNo));

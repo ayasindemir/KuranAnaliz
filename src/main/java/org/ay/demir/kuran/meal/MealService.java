@@ -33,4 +33,12 @@ public class MealService {
 		return (List<Meal>) mealRepo.findBySureNoAndAyetNo(p_iSureNo, p_iAyetNo);
 	}
 
+	public List<Meal> getAllBySureNoAndYazar(Integer sureNo, String yazar) {
+		return mealRepo.findBySureNoAndYazar(sureNo, yazar);
+	}
+
+	public List<Meal> getByYazar(String yazar) {
+		return mealRepo.findByYazar(yazar);
+	}
+
 }
