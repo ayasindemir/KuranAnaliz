@@ -43,7 +43,7 @@ public class AKuranTranslationService {
 		}
 	}
 
-	public List<AKuranTranslation> getAll() {
-		return (List<AKuranTranslation>) translationRepo.findAll();
+	public List<AKuranTranslation> getByAuthorId(Long auhtorId) {
+		return (List<AKuranTranslation>) translationRepo.findByAuthorId(auhtorId);
 	}
 }

@@ -163,6 +163,7 @@ public class AKuranUtils {
 			translation.setText(jTranslation.get("text").asText());
 			translation.setAuthorId(jTranslation.get("author").get("id").asLong());
 			translation.setVerseId(jVerse.get("id").asLong());
+			translation.setSurahId(surahId);
 			entityManager.merge(translation);
 		}
 		System.out.println("Surah: " + surah.get("id") + " Author: " + authorId);

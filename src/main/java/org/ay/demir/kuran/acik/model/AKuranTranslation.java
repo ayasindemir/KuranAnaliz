@@ -13,6 +13,7 @@ public class AKuranTranslation implements Comparable<AKuranTranslation> {
 	private String text;
 	private Long authorId;
 	private Long verseId;
+	private Long surahId;
 
 	@Id
 	public Long getId() {
@@ -48,15 +49,23 @@ public class AKuranTranslation implements Comparable<AKuranTranslation> {
 		this.verseId = verseId;
 	}
 
+	public Long getSurahId() {
+		return surahId;
+	}
+
+	public void setSurahId(Long surahId) {
+		this.surahId = surahId;
+	}
+
 	@Override
 	public int compareTo(AKuranTranslation a) {
-		int c = this.authorId.compareTo(a.authorId);
+		int c = this.surahId.compareTo(a.surahId);
+
 		if (c == 0) {
 			c = this.verseId.compareTo(a.verseId);
 		}
 
 		return c;
-
 	}
 
 }
