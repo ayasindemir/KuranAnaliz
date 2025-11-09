@@ -14,7 +14,7 @@ import org.ay.demir.kuran.acik.model.AKuranRootChars;
 import org.ay.demir.kuran.acik.model.AKuranRootDiffs;
 import org.ay.demir.kuran.acik.model.AKuranRoots;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
-import org.ay.demir.kuran.acik.model.AKuranTransFootNotes;
+import org.ay.demir.kuran.acik.model.AKuranTranlationFootNotes;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
 
@@ -173,6 +173,43 @@ public class AKuranUtils {
 		return resultList;
 	}
 
+	public static void downloadTranslationFootNotes(Long surahId, Long authorId, EntityManager entityManager)
+			throws IOException, InterruptedException {
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(apiBaseUrl + "surah/" + surahId + "?author=" + authorId)).GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode root = new ObjectMapper().readTree(response.body());
+
+		JsonNode surah = root.get("data");
+
+		for (JsonNode jVerse : surah.get("verses")) {
+			JsonNode jTranslation = jVerse.get("translation");
+			Long trID = jTranslation.get("id").asLong();
+
+			for (JsonNode footNote : jTranslation.get("footnotes")) {
+				AKuranTranlationFootNotes fn = new AKuranTranlationFootNotes();
+				fn.setId(footNote.get("id").asLong());
+				fn.setText(footNote.get("text").asText());
+				fn.setNumber(footNote.get("number").asLong());
+				fn.setTranslationId(trID);
+
+				if (fn.getId() != null) {
+					entityManager.merge(fn);
+				}
+			}
+		}
+
+		entityManager.flush();
+		entityManager.clear();
+		System.out.println("Surah: " + surah.get("id") + " Author: " + authorId);
+
+	}
+
 	public static void downloadRoots(Long pRootId, EntityManager entityManager)
 			throws IOException, InterruptedException {
 
@@ -208,56 +245,6 @@ public class AKuranUtils {
 
 			System.out.println("roots downloaded for root " + mRoot.getArabic());
 		}
-	}
-
-	public static List<AKuranVerses> downloadTransFootNotesOnly(Long surahId, Long authorId,
-			EntityManager entityManager) {
-
-		List<AKuranVerses> resultList = new ArrayList<AKuranVerses>();
-
-		try {
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(apiBaseUrl + "surah/" + surahId + "?author=" + authorId)).GET().build();
-
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			JsonNode surah = root.get("data");
-
-			for (JsonNode jVerse : surah.get("verses")) {
-				JsonNode jTranslation = jVerse.get("translation");
-				Long trID = jTranslation.get("id").asLong();
-
-				for (JsonNode footNote : jTranslation.get("footnotes")) {
-					AKuranTransFootNotes fn = new AKuranTransFootNotes();
-					fn.setId(footNote.get("id").asLong());
-					fn.setText(footNote.get("text").asText());
-					fn.setNumber(footNote.get("number").asLong());
-					fn.setTranslationId(trID);
-
-					if (fn.getId() != null) {
-						entityManager.merge(fn);
-					}
-				}
-
-				entityManager.flush();
-				entityManager.clear();
-				System.out.println("Surah: " + surah.get("id") + " Verse: " + jVerse.get("verse_number").asLong()
-						+ " Author: " + authorId);
-			}
-
-			return resultList;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return new ArrayList<AKuranVerses>();
 	}
 
 }

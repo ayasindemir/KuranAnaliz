@@ -12,6 +12,7 @@ import org.ay.demir.kuran.acik.service.AKuranAuthorService;
 import org.ay.demir.kuran.acik.service.AKuranRootCharsService;
 import org.ay.demir.kuran.acik.service.AKuranRootsService;
 import org.ay.demir.kuran.acik.service.AKuranSurahService;
+import org.ay.demir.kuran.acik.service.AKuranTranslationFootNotesService;
 import org.ay.demir.kuran.acik.service.AKuranTranslationService;
 import org.ay.demir.kuran.acik.service.AKuranVerseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class AKuranController {
 
 	@Autowired
 	private AKuranTranslationService translationService;
+
+	@Autowired
+	private AKuranTranslationFootNotesService footNotesService;
 
 	@PostMapping(path = "/authors/downloadAuthors")
 	public void downloadAuthors() throws Exception {
@@ -104,6 +108,11 @@ public class AKuranController {
 	public ResponseEntity<List<AKuranTranslation>> getTranslationsByAuthor(@RequestParam("authorId") Long authorId)
 			throws Exception {
 		return ResponseEntity.ok(translationService.getByAuthorId(authorId));
+	}
+
+	@PostMapping(path = "/verses/downloadTranslationFootNotes")
+	public void downloadTranslationFootNotes() throws Exception {
+		footNotesService.downloadTranslationFootNotes();
 	}
 
 }
