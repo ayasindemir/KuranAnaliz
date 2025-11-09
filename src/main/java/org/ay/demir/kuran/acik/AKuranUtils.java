@@ -17,7 +17,6 @@ import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranTransFootNotes;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
-import org.ay.demir.kuran.acik.service.AKuranTranslationService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -141,6 +140,38 @@ public class AKuranUtils {
 		entityManager.clear();
 	}
 
+	public static List<AKuranVerses> downloadAllVersesTranslations(Long surahId, Long authorId,
+			EntityManager entityManager) throws IOException, InterruptedException {
+
+		List<AKuranVerses> resultList = new ArrayList<AKuranVerses>();
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(apiBaseUrl + "surah/" + surahId + "?author=" + authorId)).GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode root = new ObjectMapper().readTree(response.body());
+
+		JsonNode surah = root.get("data");
+
+		for (JsonNode jVerse : surah.get("verses")) {
+			AKuranTranslation translation = new AKuranTranslation();
+			JsonNode jTranslation = jVerse.get("translation");
+			translation.setId(jTranslation.get("id").asLong());
+			translation.setText(jTranslation.get("text").asText());
+			translation.setAuthorId(jTranslation.get("author").get("id").asLong());
+			translation.setVerseId(jVerse.get("id").asLong());
+			entityManager.merge(translation);
+		}
+		System.out.println("Surah: " + surah.get("id") + " Author: " + authorId);
+		entityManager.flush();
+		entityManager.clear();
+
+		return resultList;
+	}
+
 	public static void downloadRoots(Long pRootId, EntityManager entityManager)
 			throws IOException, InterruptedException {
 
@@ -218,47 +249,6 @@ public class AKuranUtils {
 				System.out.println("Surah: " + surah.get("id") + " Verse: " + jVerse.get("verse_number").asLong()
 						+ " Author: " + authorId);
 			}
-
-			return resultList;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return new ArrayList<AKuranVerses>();
-	}
-
-	public static List<AKuranVerses> downloadVersesTranslationsOnly(Long surahId, Long authorId,
-			AKuranTranslationService translationService, EntityManager entityManager) {
-
-		List<AKuranVerses> resultList = new ArrayList<AKuranVerses>();
-
-		try {
-
-			HttpClient client = HttpClient.newHttpClient();
-
-			HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(apiBaseUrl + "surah/" + surahId + "?author=" + authorId)).GET().build();
-
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode root = mapper.readTree(response.body());
-
-			JsonNode surah = root.get("data");
-
-			for (JsonNode jVerse : surah.get("verses")) {
-				AKuranTranslation translation = new AKuranTranslation();
-				JsonNode jTranslation = jVerse.get("translation");
-				translation.setId(jTranslation.get("id").asLong());
-				translation.setText(jTranslation.get("text").asText());
-				translation.setAuthorId(jTranslation.get("author").get("id").asLong());
-				translation.setVerseId(jVerse.get("id").asLong());
-				entityManager.merge(translation);
-			}
-			System.out.println("Surah: " + surah.get("id") + " Author: " + authorId);
-			entityManager.flush();
-			entityManager.clear();
 
 			return resultList;
 

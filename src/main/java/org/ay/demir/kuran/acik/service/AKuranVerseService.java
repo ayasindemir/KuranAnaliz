@@ -45,14 +45,6 @@ public class AKuranVerseService {
 //		for (AKuranSurah surah : surahList) {
 //			List<AKuranAuthor> authorList = authorService.getAll();
 //			for (AKuranAuthor author : authorList) {
-//				AKuranUtils.downloadVersesTranslationsOnly(surah.getId(), author.getId(), translationService,
-//						entityManager);
-//			}
-//		}
-
-//		for (AKuranSurah surah : surahList) {
-//			List<AKuranAuthor> authorList = authorService.getAll();
-//			for (AKuranAuthor author : authorList) {
 //				AKuranUtils.downloadTransFootNotesOnly(surah.getId(), author.getId(), entityManager);
 //			}
 //		}

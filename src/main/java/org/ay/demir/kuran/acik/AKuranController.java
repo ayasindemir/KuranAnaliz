@@ -6,11 +6,13 @@ import org.ay.demir.kuran.acik.model.AKuranAuthor;
 import org.ay.demir.kuran.acik.model.AKuranRootChars;
 import org.ay.demir.kuran.acik.model.AKuranRoots;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
+import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
 import org.ay.demir.kuran.acik.service.AKuranAuthorService;
 import org.ay.demir.kuran.acik.service.AKuranRootCharsService;
 import org.ay.demir.kuran.acik.service.AKuranRootsService;
 import org.ay.demir.kuran.acik.service.AKuranSurahService;
+import org.ay.demir.kuran.acik.service.AKuranTranslationService;
 import org.ay.demir.kuran.acik.service.AKuranVerseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -38,6 +40,9 @@ public class AKuranController {
 
 	@Autowired
 	private AKuranVerseService verseService;
+
+	@Autowired
+	private AKuranTranslationService translationService;
 
 	@PostMapping(path = "/authors/downloadAuthors")
 	public void downloadAuthors() throws Exception {
@@ -87,6 +92,16 @@ public class AKuranController {
 	@GetMapping(path = "/verses/getAllVerses", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<AKuranVerses>> getAllVerses() {
 		return ResponseEntity.ok(verseService.getAll());
+	}
+
+	@PostMapping(path = "/verses/downloadTranslations")
+	public void downloadTranslations() throws Exception {
+		translationService.downloadTranslations();
+	}
+
+	@GetMapping(path = "/verses/getAllTranslations")
+	public ResponseEntity<List<AKuranTranslation>> getAllTranslations() throws Exception {
+		return ResponseEntity.ok(translationService.getAll());
 	}
 
 }
