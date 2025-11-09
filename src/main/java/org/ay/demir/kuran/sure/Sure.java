@@ -22,8 +22,14 @@ public class Sure implements Comparable<Sure> {
 	@Column(name = "sure_no")
 	private Integer sureNo;
 
+	@Column(name = "ayet_sayisi")
+	private Integer ayetSayisi;
+
 	@Column(name = "sure_ad")
 	private String sureAdi;
+
+	@Column(name = "sure_ad_arapca")
+	private String sureAdiArapca;
 
 	public Long getId() {
 		return id;
@@ -41,6 +47,14 @@ public class Sure implements Comparable<Sure> {
 		this.sureNo = sureNo;
 	}
 
+	public Integer getAyetSayisi() {
+		return ayetSayisi;
+	}
+
+	public void setAyetSayisi(Integer ayetSayisi) {
+		this.ayetSayisi = ayetSayisi;
+	}
+
 	public String getSureAdi() {
 		return sureAdi;
 	}
@@ -49,9 +63,18 @@ public class Sure implements Comparable<Sure> {
 		this.sureAdi = sureAdi;
 	}
 
+	public String getSureAdiArapca() {
+		return sureAdiArapca;
+	}
+
+	public void setSureAdiArapca(String sureAdiArapca) {
+		this.sureAdiArapca = sureAdiArapca;
+	}
+
 	@Override
 	public String toString() {
-		return "Sure [sureNo=" + sureNo + ", sureAdi=" + sureAdi + "]";
+		return "Sure [sureNo=" + sureNo + ", ayetSayisi=" + ayetSayisi + ", sureAdi=" + sureAdi + ", sureAdiArapca="
+				+ sureAdiArapca + "]";
 	}
 
 	@Override
