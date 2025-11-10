@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,34 +17,46 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.ay.demir.kuran.kelime.KelimeMeal;
 import org.ay.demir.kuran.meal.Meal;
 import org.ay.demir.kuran.mushaf.Mushaf;
+import org.ay.demir.kuran.page.Page;
+import org.ay.demir.kuran.page.SuraVerses;
+import org.ay.demir.kuran.page.Verse;
+import org.ay.demir.kuran.sure.Sure;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monitorjbl.xlsx.StreamingReader;
 
 public class FileUtils {
 
-	public static TreeMap<Integer, String> uploadSurelerFromTxtFile() throws IOException {
+	public static List<Sure> uploadSurelerFromTxtFile() throws IOException {
 
-		InputStream is = FileUtils.class.getClassLoader().getResourceAsStream("sureler.txt");
+		InputStream is = FileUtils.class.getClassLoader().getResourceAsStream("sureler2.txt");
 		InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
 		BufferedReader br = new BufferedReader(streamReader);
 
-		TreeMap<Integer, String> sureMap = new TreeMap<Integer, String>();
+		List<Sure> sureList = new ArrayList<Sure>();
 
 		try {
-
 			for (String line; (line = br.readLine()) != null;) {
-				Integer sureNo = Integer.parseInt(line.substring(0, line.indexOf("-")));
-				String sureAdi = line.substring(line.indexOf("-") + 1, line.length());
-				sureMap.put(sureNo, sureAdi);
+				if (line != null && line.startsWith("\uFEFF")) {
+					line = line.substring(1);
+				}
+				String[] parts = line.split(";");
+				Sure sure = new Sure();
+				sure.setSureNo(Integer.parseInt(parts[0].trim()));
+				sure.setAyetSayisi(Integer.parseInt(parts[1]));
+				sure.setSureAdi(parts[2]);
+				sure.setSureAdiArapca(parts[3]);
+				sureList.add(sure);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			sureMap = new TreeMap<Integer, String>();
+			sureList = new ArrayList<Sure>();
 		} finally {
 			br.close();
 		}
 
-		return sureMap;
+		return sureList;
 	}
 
 	public static List<Mushaf> uploadMushafFromTxtFile() throws IOException {
@@ -177,6 +189,84 @@ public class FileUtils {
 		workbook.close();
 
 		return detayList;
+	}
+
+	public static List<Page> uploadQuranPages() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+
+			// 1. JSON dosyasını oku (örnek: pages.json)
+			List<Map<String, Object>> rawList = mapper.readValue(
+					FileUtils.class.getClassLoader().getResourceAsStream("quran_by_pages.json"),
+					new TypeReference<List<Map<String, Object>>>() {
+					});
+
+			// 2. Listeyi Entity nesnelerine dönüştür
+			List<Page> pageEntities = new ArrayList<Page>();
+
+			for (Map<String, Object> pageMap : rawList) {
+				Page page = new Page();
+				page.setPageIndex((Integer) pageMap.get("page_index"));
+
+				Map<String, List<Map<String, Object>>> versesBySura = (Map<String, List<Map<String, Object>>>) pageMap
+						.get("verses_by_sura");
+
+				List<SuraVerses> suraEntities = new ArrayList<SuraVerses>();
+
+				if (versesBySura != null) {
+					for (Map.Entry<String, List<Map<String, Object>>> entry : versesBySura.entrySet()) {
+						String suraName = entry.getKey();
+						List<Map<String, Object>> verseList = entry.getValue();
+
+						SuraVerses suraVerses = new SuraVerses();
+						suraVerses.setSuraName(suraName);
+						suraVerses.setPage(page);
+
+						List<Verse> verseEntities = new ArrayList<Verse>();
+
+						for (Map<String, Object> verseMap : verseList) {
+							Verse verse = new Verse();
+
+							// JSON’da bazen index int değil double gelebilir — güvenli dönüştürme
+							Object idx = verseMap.get("index");
+							if (idx instanceof Integer)
+								verse.setIndex((Integer) idx);
+							else if (idx instanceof Number)
+								verse.setIndex(((Number) idx).intValue());
+
+							verse.setText((String) verseMap.get("text"));
+							verse.setSuraVerses(suraVerses);
+
+							verseEntities.add(verse);
+						}
+
+						suraVerses.setVerses(verseEntities);
+						suraEntities.add(suraVerses);
+					}
+				}
+
+				page.setSuraVerses(suraEntities);
+				pageEntities.add(page);
+			}
+
+			// 3. Test: ilk sayfayı yazdır
+			for (Page page : pageEntities) {
+				System.out.println("Sayfa " + page.getPageIndex());
+				for (SuraVerses sura : page.getSuraVerses()) {
+					System.out.println("  Sure: " + sura.getSuraName());
+					for (Verse v : sura.getVerses()) {
+						System.out.println("    [" + v.getIndex() + "] " + v.getText());
+					}
+				}
+			}
+
+			return pageEntities;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<Page>();
 	}
 
 }

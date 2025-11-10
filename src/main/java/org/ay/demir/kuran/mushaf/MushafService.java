@@ -15,6 +15,21 @@ public class MushafService {
 	public void uploadMushafFromFile() throws Exception {
 		List<Mushaf> mushafList = FileUtils.uploadMushafFromTxtFile();
 
+		for (Mushaf mushaf : mushafList) {
+
+			if (mushaf.getAyet().contains("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ")) {
+				if (mushaf.getSureNo() == 1) {
+					continue;
+				} else if (mushaf.getSureNo() == 27 && mushaf.getAyetNo() == 30) {
+					continue;
+				} else {
+					String newAyet = mushaf.getAyet().replaceAll("بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ", "").trim();
+					mushaf.setAyet(newAyet);
+				}
+			}
+		}
+		System.out.println("Mushaf upload is done. Total ayet count: " + mushafList.size());
+
 		mushafRepo.saveAll(mushafList);
 	}
 
