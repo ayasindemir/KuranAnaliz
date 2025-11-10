@@ -22,44 +22,23 @@ public class AKuranVerseService {
 	AKuranSurahService surahService;
 
 	@Autowired
-	AKuranAuthorService authorService;
-
-	@Autowired
-	AKuranTransFootNotesService footNoteService;
-
-	@Autowired
-	AKuranTranslationService translationService;
-
-	@Autowired
 	private EntityManager entityManager;
 
 	@Transactional
 	public void downloadVerses() throws Exception {
 
-		// First download and save surah verse
 		List<AKuranSurah> surahList = surahService.getAll();
 		for (AKuranSurah surah : surahList) {
 			AKuranUtils.downloadVersesOnly(surah.getId(), entityManager);
 		}
-
-//		for (AKuranSurah surah : surahList) {
-//			List<AKuranAuthor> authorList = authorService.getAll();
-//			for (AKuranAuthor author : authorList) {
-//				AKuranUtils.downloadTransFootNotesOnly(surah.getId(), author.getId(), entityManager);
-//			}
-//		}
-
-//		for (AKuranSurah surah : surahList) {
-//			List<AKuranAuthor> authorList = authorService.getAll();
-//			for (AKuranAuthor author : authorList) {
-//				AKuranUtils.downloadVersesTranslations(surah.getId(), author.getId(), footNoteService,
-//						translationService);
-//			}
-//		}
 	}
 
 	public List<AKuranVerses> getAll() {
 		return (List<AKuranVerses>) verseRepo.findAll();
+	}
+
+	public List<AKuranVerses> getBySurahId(Long id) {
+		return verseRepo.findBySurahId(id);
 	}
 
 }
