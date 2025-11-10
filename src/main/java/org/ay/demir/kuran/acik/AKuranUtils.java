@@ -11,12 +11,12 @@ import java.util.List;
 import org.ay.demir.kuran.acik.model.AKuranAudio;
 import org.ay.demir.kuran.acik.model.AKuranAuthor;
 import org.ay.demir.kuran.acik.model.AKuranRootChars;
-import org.ay.demir.kuran.acik.model.AKuranRootDiffs;
-import org.ay.demir.kuran.acik.model.AKuranRoots;
+import org.ay.demir.kuran.acik.model.AKuranRootWord;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranTranlationFootNotes;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
+import org.ay.demir.kuran.acik.model.AKuranWords;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +28,6 @@ public class AKuranUtils {
 	private static String apiBaseUrl = "https://api.acikkuran.com/";
 	private static String rootchars = "rootchars";
 	private static String authors = "authors";
-	private static String url_root = "root/";
 	private static String surahs = "surahs";
 
 	public static List<AKuranAuthor> downloadAuthors() throws IOException, InterruptedException {
@@ -210,41 +209,52 @@ public class AKuranUtils {
 
 	}
 
-	public static void downloadRoots(Long pRootId, EntityManager entityManager)
+	public static void downloadWords(Long surahId, Long verseId, EntityManager entityManager)
 			throws IOException, InterruptedException {
 
 		HttpClient client = HttpClient.newHttpClient();
 
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiBaseUrl + url_root + pRootId)).GET().build();
+		HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(apiBaseUrl + "surah/" + surahId + "/verse/" + verseId + "/words")).GET().build();
 
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
 		JsonNode root = new ObjectMapper().readTree(response.body());
 
-		for (JsonNode item1 : root.get("data")) {
-			AKuranRoots mRoot = new AKuranRoots();
-			mRoot.setId(item1.get("id").asLong());
-			mRoot.setLatin(item1.get("latin").asText());
-			mRoot.setArabic(item1.get("arabic").asText());
-			mRoot.setMean(item1.get("mean").asText());
-			mRoot.setMeanEng(item1.get("mean_en").asText());
-			mRoot.setRootCharId(item1.get("rootchar_id").asLong());
-			entityManager.merge(mRoot);
+		for (JsonNode jword : root.get("data")) {
+			if (jword == null || jword.isNull()) {
+				continue;
+			}
+			if (jword.get("id") == null || jword.get("id").isNull()) {
+				continue;
+			}
+			AKuranWords word = new AKuranWords();
+			word.setId(jword.get("id").asLong());
+			word.setSurahId(surahId);
+			word.setVerseId(verseId);
+			word.setSortNumber(jword.get("sort_number").asLong());
+			word.setArabic(jword.get("arabic").asText());
+			word.setTurkish(jword.get("turkish").asText());
 
-			for (JsonNode itemDiffs : item1.get("diffs")) {
-				AKuranRootDiffs diffs = new AKuranRootDiffs();
-				diffs.setId(itemDiffs.get("id").asLong());
-				diffs.setDiff(itemDiffs.get("diff").asText());
-				diffs.setCount(itemDiffs.get("count").asInt());
-				diffs.setRootId(mRoot.getId());
-				entityManager.merge(diffs);
+			JsonNode jRoot = jword.get("root");
+			if (jRoot == null || jRoot.isNull()) {
+				continue;
+			} else {
+				AKuranRootWord rootWord = new AKuranRootWord();
+				rootWord.setId(jRoot.get("id").asLong());
+				rootWord.setLatin(jRoot.get("latin").asText());
+				rootWord.setArabic(jRoot.get("arabic").asText());
+
+				entityManager.merge(rootWord);
+				word.setRootId(rootWord.getId());
+
 			}
 
-			entityManager.flush();
-			entityManager.clear();
-
-			System.out.println("roots downloaded for root " + mRoot.getArabic());
+			entityManager.merge(word);
 		}
+
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 }
