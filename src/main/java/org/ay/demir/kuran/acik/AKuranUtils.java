@@ -11,6 +11,7 @@ import java.util.List;
 import org.ay.demir.kuran.acik.model.AKuranAudio;
 import org.ay.demir.kuran.acik.model.AKuranAuthor;
 import org.ay.demir.kuran.acik.model.AKuranRootChars;
+import org.ay.demir.kuran.acik.model.AKuranRootDiffs;
 import org.ay.demir.kuran.acik.model.AKuranRootWord;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranTranlationFootNotes;
@@ -255,6 +256,36 @@ public class AKuranUtils {
 
 		entityManager.flush();
 		entityManager.clear();
+	}
+
+	public static void downloadRootDiffs(String latin, EntityManager entityManager)
+			throws IOException, InterruptedException {
+
+		HttpClient client = HttpClient.newHttpClient();
+
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://api.acikkuran.com/root/latin/" + latin))
+				.GET().build();
+
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		JsonNode root = new ObjectMapper().readTree(response.body());
+
+		JsonNode rootWord = root.get("data");
+
+		Long rootWordId = rootWord.get("id").asLong();
+
+		for (JsonNode diff : rootWord.get("diffs")) {
+			AKuranRootDiffs rootDiff = new AKuranRootDiffs();
+			rootDiff.setId(diff.get("id").asLong());
+			rootDiff.setDiff(diff.get("diff").asText());
+			rootDiff.setCount(diff.get("count").asInt());
+			rootDiff.setRootId(rootWordId);
+			entityManager.merge(rootDiff);
+		}
+
+		entityManager.flush();
+		entityManager.clear();
+		System.out.println("RootWord: " + rootWord.get("arabic"));
 	}
 
 }

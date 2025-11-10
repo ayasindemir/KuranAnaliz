@@ -109,4 +109,9 @@ public class AKuranController {
 		wordsService.downloadWords();
 	}
 
+	@PostMapping(path = "/words/downloadRootDiffs")
+	public void downloadRootDiffs() throws Exception {
+		wordsService.downloadRootDiffs();
+	}
+
 }
