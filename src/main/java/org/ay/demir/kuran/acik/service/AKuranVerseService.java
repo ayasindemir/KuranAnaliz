@@ -38,7 +38,7 @@ public class AKuranVerseService {
 	}
 
 	public List<AKuranVerses> getBySurahId(Long id) {
-		return verseRepo.findBySurahId(id);
+		return verseRepo.findBySN(id);
 	}
 
 }

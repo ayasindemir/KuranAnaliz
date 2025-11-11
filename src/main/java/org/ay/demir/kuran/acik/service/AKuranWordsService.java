@@ -39,7 +39,7 @@ public class AKuranWordsService {
 
 			for (AKuranVerses verse : verseList) {
 				AKuranUtils.downloadWords(surah.getId(), verse.getId(), entityManager);
-				System.out.println("Downloaded words for Surah " + surah.getId() + ", Verse " + verse.getVerseNumber());
+				System.out.println("Downloaded words for Surah " + surah.getId() + ", Verse " + verse.getVN());
 			}
 		}
 	}

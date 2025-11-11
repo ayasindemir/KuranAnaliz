@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AKuranVerseRepository extends CrudRepository<AKuranVerses, Long> {
 
-	List<AKuranVerses> findBySurahId(Long id);
+	List<AKuranVerses> findBySN(Long id);
 
 }

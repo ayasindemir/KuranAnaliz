@@ -126,14 +126,14 @@ public class AKuranUtils {
 		for (JsonNode jVerse : surah.get("verses")) {
 			AKuranVerses verse = new AKuranVerses();
 			verse.setId(jVerse.get("id").asLong());
-			verse.setSurahId(jVerse.get("surah_id").asLong());
-			verse.setVerseNumber(jVerse.get("verse_number").asLong());
+			verse.setSN(jVerse.get("surah_id").asLong());
+			verse.setVN(jVerse.get("verse_number").asLong());
 			verse.setVerse(jVerse.get("verse").asText());
 			verse.setPage(jVerse.get("page").asInt());
-			verse.setJuzNumber(jVerse.get("juz_number").asInt());
-			verse.setTranscription(jVerse.get("transcription").asText());
+			verse.setJN(jVerse.get("juz_number").asInt());
+			verse.setPro(jVerse.get("transcription").asText());
 			entityManager.merge(verse);
-			System.out.println("Surah: " + surah.get("id") + " Verse: " + verse.getVerseNumber());
+			System.out.println("Surah: " + surah.get("id") + " Verse: " + verse.getVN());
 		}
 
 		entityManager.flush();
@@ -160,10 +160,11 @@ public class AKuranUtils {
 			AKuranTranslation translation = new AKuranTranslation();
 			JsonNode jTranslation = jVerse.get("translation");
 			translation.setId(jTranslation.get("id").asLong());
-			translation.setText(jTranslation.get("text").asText());
+			translation.setTxt(jTranslation.get("text").asText());
 			translation.setAuthorId(jTranslation.get("author").get("id").asLong());
 			translation.setVerseId(jVerse.get("id").asLong());
-			translation.setSurahId(surahId);
+			translation.setVN(jVerse.get("verse_number").asLong());
+			translation.setSN(surahId);
 			entityManager.merge(translation);
 		}
 		System.out.println("Surah: " + surah.get("id") + " Author: " + authorId);

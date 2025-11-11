@@ -1,5 +1,7 @@
 package org.ay.demir.kuran.acik.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,14 +12,15 @@ import jakarta.persistence.Table;
 public class AKuranVerses {
 
 	private Long id;
-	private Long surahId;
-	private Long verseNumber;
+	private Long sN;
+	private Long vN;
 	private String verse;
 	private Integer page;
-	private Integer juzNumber;
-	private String transcription;
+	private Integer jN;
+	private String pro;
 
 	@Id
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -26,20 +29,22 @@ public class AKuranVerses {
 		this.id = id;
 	}
 
-	public Long getSurahId() {
-		return surahId;
+	@Column(name = "surah_id")
+	public Long getSN() {
+		return sN;
 	}
 
-	public void setSurahId(Long surahId) {
-		this.surahId = surahId;
+	public void setSN(Long sN) {
+		this.sN = sN;
 	}
 
-	public Long getVerseNumber() {
-		return verseNumber;
+	@Column(name = "verse_number")
+	public Long getVN() {
+		return vN;
 	}
 
-	public void setVerseNumber(Long verseNumber) {
-		this.verseNumber = verseNumber;
+	public void setVN(Long vN) {
+		this.vN = vN;
 	}
 
 	@Column(length = 4000)
@@ -59,21 +64,21 @@ public class AKuranVerses {
 		this.page = page;
 	}
 
-	public Integer getJuzNumber() {
-		return juzNumber;
+	@Column(name = "juz_number")
+	public Integer getJN() {
+		return jN;
 	}
 
-	public void setJuzNumber(Integer juzNumber) {
-		this.juzNumber = juzNumber;
+	public void setJN(Integer jN) {
+		this.jN = jN;
 	}
 
-	@Column(length = 4000)
-	public String getTranscription() {
-		return transcription;
+	@Column(name = "transcription", length = 4000)
+	public String getPro() {
+		return pro;
 	}
 
-	public void setTranscription(String transcription) {
-		this.transcription = transcription;
+	public void setPro(String pro) {
+		this.pro = pro;
 	}
-
 }
