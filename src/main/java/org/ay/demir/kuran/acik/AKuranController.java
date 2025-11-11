@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.ay.demir.kuran.acik.model.AKuranAuthor;
 import org.ay.demir.kuran.acik.model.AKuranRootChars;
+import org.ay.demir.kuran.acik.model.AKuranRootDiffs;
+import org.ay.demir.kuran.acik.model.AKuranRootWord;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
+import org.ay.demir.kuran.acik.model.AKuranTranlationFootNotes;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
 import org.ay.demir.kuran.acik.model.AKuranWords;
@@ -105,6 +108,11 @@ public class AKuranController {
 		footNotesService.downloadTranslationFootNotes();
 	}
 
+	@GetMapping(path = "/verses/getAllTranslationFootNotes", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AKuranTranlationFootNotes>> getAllTranslationFootNotes() throws Exception {
+		return ResponseEntity.ok(footNotesService.getAllFootNotes());
+	}
+
 	@PostMapping(path = "/words/downloadWords")
 	public void downloadWords() throws Exception {
 		wordsService.downloadWords();
@@ -113,6 +121,16 @@ public class AKuranController {
 	@GetMapping(path = "/words/getAllWords", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<AKuranWords>> getAllWords() throws Exception {
 		return ResponseEntity.ok(wordsService.getAllWords());
+	}
+
+	@GetMapping(path = "/words/getAllRootDiffs", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AKuranRootDiffs>> getAllRootDiffs() throws Exception {
+		return ResponseEntity.ok(wordsService.getAllRootDiffs());
+	}
+
+	@GetMapping(path = "/words/getAllRootWords", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AKuranRootWord>> getAllRootWords() throws Exception {
+		return ResponseEntity.ok(wordsService.getAllRootWords());
 	}
 
 	@PostMapping(path = "/words/downloadRootDiffs")

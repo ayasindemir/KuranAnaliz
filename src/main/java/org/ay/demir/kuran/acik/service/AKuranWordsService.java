@@ -3,10 +3,12 @@ package org.ay.demir.kuran.acik.service;
 import java.util.List;
 
 import org.ay.demir.kuran.acik.AKuranUtils;
+import org.ay.demir.kuran.acik.model.AKuranRootDiffs;
 import org.ay.demir.kuran.acik.model.AKuranRootWord;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
 import org.ay.demir.kuran.acik.model.AKuranWords;
+import org.ay.demir.kuran.acik.repository.AKuranRootDiffsRepository;
 import org.ay.demir.kuran.acik.repository.AKuranRootWordsRepository;
 import org.ay.demir.kuran.acik.repository.AKuranWordsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class AKuranWordsService {
 	@Autowired
 	private AKuranWordsRepository wordsRepo;
 
+	@Autowired
+	private AKuranRootDiffsRepository rootDiffsRepo;
+
 	@Transactional
 	public void downloadWords() throws Exception {
 
@@ -44,8 +49,9 @@ public class AKuranWordsService {
 
 			for (AKuranVerses verse : verseList) {
 				AKuranUtils.downloadWords(surah.getId(), verse.getId(), entityManager);
-				System.out.println("Downloaded words for Surah " + surah.getId() + ", Verse " + verse.getVN());
 			}
+
+			System.out.println("Downloaded words for Surah " + surah.getId());
 		}
 	}
 
@@ -59,6 +65,14 @@ public class AKuranWordsService {
 
 	public List<AKuranWords> getAllWords() {
 		return (List<AKuranWords>) wordsRepo.findAll();
+	}
+
+	public List<AKuranRootWord> getAllRootWords() {
+		return (List<AKuranRootWord>) rootWordsRepo.findAll();
+	}
+
+	public List<AKuranRootDiffs> getAllRootDiffs() {
+		return (List<AKuranRootDiffs>) rootDiffsRepo.findAll();
 	}
 
 }

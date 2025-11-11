@@ -240,7 +240,7 @@ public class AKuranUtils {
 
 			JsonNode jRoot = jword.get("root");
 			if (jRoot == null || jRoot.isNull()) {
-				continue;
+				//nothing
 			} else {
 				AKuranRootWord rootWord = new AKuranRootWord();
 				rootWord.setId(jRoot.get("id").asLong());
@@ -249,7 +249,6 @@ public class AKuranUtils {
 
 				entityManager.merge(rootWord);
 				word.setRoot(rootWord.getId());
-
 			}
 
 			entityManager.merge(word);
