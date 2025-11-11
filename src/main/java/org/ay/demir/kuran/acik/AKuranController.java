@@ -7,6 +7,7 @@ import org.ay.demir.kuran.acik.model.AKuranRootChars;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranTranslation;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
+import org.ay.demir.kuran.acik.model.AKuranWords;
 import org.ay.demir.kuran.acik.service.AKuranAuthorService;
 import org.ay.demir.kuran.acik.service.AKuranRootCharsService;
 import org.ay.demir.kuran.acik.service.AKuranSurahService;
@@ -107,6 +108,11 @@ public class AKuranController {
 	@PostMapping(path = "/words/downloadWords")
 	public void downloadWords() throws Exception {
 		wordsService.downloadWords();
+	}
+
+	@GetMapping(path = "/words/getAllWords", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AKuranWords>> getAllWords() throws Exception {
+		return ResponseEntity.ok(wordsService.getAllWords());
 	}
 
 	@PostMapping(path = "/words/downloadRootDiffs")

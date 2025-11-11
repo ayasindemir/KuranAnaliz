@@ -1,23 +1,26 @@
 package org.ay.demir.kuran.acik.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_words", schema = "kuran")
-public class AKuranWords {
+public class AKuranWords implements Comparable<AKuranWords> {
 
 	private Long id;
-	private Long sortNumber;
-	private String transcription;
-	private String arabic;
-	private String turkish;
-	private Long surahId;
-	private Long verseId;
-	private Long rootId;
+	private Long sort;
+	private String ar;
+	private String tr;
+	private Long sN;
+	private Long vN;
+	private Long root;
 
 	@Id
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -26,60 +29,70 @@ public class AKuranWords {
 		this.id = id;
 	}
 
-	public Long getSortNumber() {
-		return sortNumber;
+	@Column(name = "sort_number")
+	public Long getSort() {
+		return sort;
 	}
 
-	public void setSortNumber(Long sortNumber) {
-		this.sortNumber = sortNumber;
+	public void setSort(Long sort) {
+		this.sort = sort;
 	}
 
-	public String getTranscription() {
-		return transcription;
+	@Column(name = "arabic")
+	public String getAr() {
+		return ar;
 	}
 
-	public void setTranscription(String transcription) {
-		this.transcription = transcription;
+	public void setAr(String ar) {
+		this.ar = ar;
 	}
 
-	public String getArabic() {
-		return arabic;
+	@Column(name = "turkish")
+	public String getTr() {
+		return tr;
 	}
 
-	public void setArabic(String arabic) {
-		this.arabic = arabic;
+	public void setTr(String tr) {
+		this.tr = tr;
 	}
 
-	public String getTurkish() {
-		return turkish;
+	@Column(name = "surah_id")
+	public Long getSN() {
+		return sN;
 	}
 
-	public void setTurkish(String turkish) {
-		this.turkish = turkish;
+	public void setSN(Long sN) {
+		this.sN = sN;
 	}
 
-	public Long getSurahId() {
-		return surahId;
+	@Column(name = "verse_number")
+	public Long getVN() {
+		return vN;
 	}
 
-	public void setSurahId(Long surahId) {
-		this.surahId = surahId;
+	public void setVN(Long vN) {
+		this.vN = vN;
 	}
 
-	public Long getVerseId() {
-		return verseId;
+	@Column(name = "root_id")
+	public Long getRoot() {
+		return root;
 	}
 
-	public void setVerseId(Long verseId) {
-		this.verseId = verseId;
+	public void setRoot(Long root) {
+		this.root = root;
 	}
 
-	public Long getRootId() {
-		return rootId;
-	}
-
-	public void setRootId(Long rootId) {
-		this.rootId = rootId;
+	@Override
+	public int compareTo(AKuranWords o) {
+		int c = this.sN.compareTo(o.sN);
+		if (c == 0) {
+			c = this.vN.compareTo(o.vN);
+		}
+		if (c == 0) {
+			c = this.sort.compareTo(o.sort);
+		}
+		return c;
 	}
 
 }

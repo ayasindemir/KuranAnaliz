@@ -232,11 +232,11 @@ public class AKuranUtils {
 			}
 			AKuranWords word = new AKuranWords();
 			word.setId(jword.get("id").asLong());
-			word.setSurahId(surahId);
-			word.setVerseId(verseId);
-			word.setSortNumber(jword.get("sort_number").asLong());
-			word.setArabic(jword.get("arabic").asText());
-			word.setTurkish(jword.get("turkish").asText());
+			word.setSN(surahId);
+			word.setVN(verseId);
+			word.setSort(jword.get("sort_number").asLong());
+			word.setAr(jword.get("arabic").asText());
+			word.setTr(jword.get("turkish").asText());
 
 			JsonNode jRoot = jword.get("root");
 			if (jRoot == null || jRoot.isNull()) {
@@ -248,7 +248,7 @@ public class AKuranUtils {
 				rootWord.setArabic(jRoot.get("arabic").asText());
 
 				entityManager.merge(rootWord);
-				word.setRootId(rootWord.getId());
+				word.setRoot(rootWord.getId());
 
 			}
 

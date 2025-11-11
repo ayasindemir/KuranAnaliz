@@ -6,7 +6,9 @@ import org.ay.demir.kuran.acik.AKuranUtils;
 import org.ay.demir.kuran.acik.model.AKuranRootWord;
 import org.ay.demir.kuran.acik.model.AKuranSurah;
 import org.ay.demir.kuran.acik.model.AKuranVerses;
+import org.ay.demir.kuran.acik.model.AKuranWords;
 import org.ay.demir.kuran.acik.repository.AKuranRootWordsRepository;
+import org.ay.demir.kuran.acik.repository.AKuranWordsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,9 @@ public class AKuranWordsService {
 
 	@Autowired
 	private AKuranRootWordsRepository rootWordsRepo;
+
+	@Autowired
+	private AKuranWordsRepository wordsRepo;
 
 	@Transactional
 	public void downloadWords() throws Exception {
@@ -50,6 +55,10 @@ public class AKuranWordsService {
 		for (AKuranRootWord rootWord : rootWordsList) {
 			AKuranUtils.downloadRootDiffs(rootWord.getLatin(), entityManager);
 		}
+	}
+
+	public List<AKuranWords> getAllWords() {
+		return (List<AKuranWords>) wordsRepo.findAll();
 	}
 
 }
