@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_words", schema = "kuran")
-public class AKuranWords implements Comparable<AKuranWords> {
+public class Word implements Comparable<Word> {
 
 	private Long id;
 	private Long sort;
@@ -84,7 +84,7 @@ public class AKuranWords implements Comparable<AKuranWords> {
 	}
 
 	@Override
-	public int compareTo(AKuranWords o) {
+	public int compareTo(Word o) {
 		int c = this.sN.compareTo(o.sN);
 		if (c == 0) {
 			c = this.vN.compareTo(o.vN);

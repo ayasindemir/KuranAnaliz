@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_trans_foot_notes", schema = "kuran")
-public class AKuranTranlationFootNotes {
+public class TranslationFootNote {
 
 	private Long id;
 	private String text;

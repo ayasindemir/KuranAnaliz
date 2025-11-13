@@ -19,7 +19,7 @@ public class SuraVerses {
 	private Page page;
 
 	@OneToMany(mappedBy = "suraVerses", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<Verse> verses;
+	private List<Verses> verses;
 
 	public Long getId() {
 		return id;
@@ -41,11 +41,11 @@ public class SuraVerses {
 		this.page = page;
 	}
 
-	public List<Verse> getVerses() {
+	public List<Verses> getVerses() {
 		return verses;
 	}
 
-	public void setVerses(List<Verse> verses) {
+	public void setVerses(List<Verses> verses) {
 		this.verses = verses;
 	}
 }

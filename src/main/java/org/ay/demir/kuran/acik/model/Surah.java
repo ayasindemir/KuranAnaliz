@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_surah", schema = "kuran")
-public class AKuranSurah implements Comparable<AKuranSurah> {
+public class Surah implements Comparable<Surah> {
 
 	private Long id;
 	private String nameTr;
@@ -65,7 +65,7 @@ public class AKuranSurah implements Comparable<AKuranSurah> {
 	}
 
 	@Override
-	public int compareTo(AKuranSurah s) {
+	public int compareTo(Surah s) {
 		return this.id.compareTo(s.id);
 	}
 }

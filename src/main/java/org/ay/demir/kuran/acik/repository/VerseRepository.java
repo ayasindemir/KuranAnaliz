@@ -2,13 +2,13 @@ package org.ay.demir.kuran.acik.repository;
 
 import java.util.List;
 
-import org.ay.demir.kuran.acik.model.AKuranVerses;
+import org.ay.demir.kuran.acik.model.Verse;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AKuranVerseRepository extends CrudRepository<AKuranVerses, Long> {
+public interface VerseRepository extends CrudRepository<Verse, Long> {
 
-	List<AKuranVerses> findBySN(Long id);
+	List<Verse> findBySN(Long id);
 
 }

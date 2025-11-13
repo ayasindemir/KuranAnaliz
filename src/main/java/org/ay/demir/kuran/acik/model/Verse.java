@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_verses", schema = "kuran")
-public class AKuranVerses {
+public class Verse {
 
 	private Long id;
 	private Long sN;

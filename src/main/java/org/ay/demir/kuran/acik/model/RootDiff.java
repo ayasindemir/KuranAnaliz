@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_root_diffs", schema = "kuran")
-public class AKuranRootDiffs {
+public class RootDiff {
 
 	private Long id;
 	private String diff;

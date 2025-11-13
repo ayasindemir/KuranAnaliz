@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_author", schema = "kuran")
-public class AKuranAuthor implements Comparable<AKuranAuthor> {
+public class Author implements Comparable<Author> {
 
 	private Long id;
 	private String descr;
@@ -23,7 +23,7 @@ public class AKuranAuthor implements Comparable<AKuranAuthor> {
 	}
 
 	public String getDescr() {
-		return descr == null ? name : descr;
+		return descr;
 	}
 
 	public void setDescr(String descr) {
@@ -47,7 +47,7 @@ public class AKuranAuthor implements Comparable<AKuranAuthor> {
 	}
 
 	@Override
-	public int compareTo(AKuranAuthor a) {
+	public int compareTo(Author a) {
 		return this.id.compareTo(a.id);
 	}
 }

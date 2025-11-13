@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "a_audio", schema = "kuran")
-public class AKuranAudio {
+public class Audio implements Comparable<Audio> {
 
 	private Long id;
 	private String mp3;
@@ -68,6 +68,11 @@ public class AKuranAudio {
 
 	public void setSurahId(Long surahId) {
 		this.surahId = surahId;
+	}
+
+	@Override
+	public int compareTo(Audio o) {
+		return this.surahId.compareTo(o.surahId);
 	}
 
 }

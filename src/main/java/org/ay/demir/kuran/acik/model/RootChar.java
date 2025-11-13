@@ -5,12 +5,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "a_root_words", schema = "kuran")
-public class AKuranRootWord {
+@Table(name = "a_root_chars", schema = "kuran")
+public class RootChar implements Comparable<RootChar> {
 
 	private Long id;
-	private String arabic;
 	private String latin;
+	private String arabic;
 
 	@Id
 	public Long getId() {
@@ -35,6 +35,11 @@ public class AKuranRootWord {
 
 	public void setArabic(String arabic) {
 		this.arabic = arabic;
+	}
+
+	@Override
+	public int compareTo(RootChar rc) {
+		return this.id.compareTo(rc.id);
 	}
 
 }

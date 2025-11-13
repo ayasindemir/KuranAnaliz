@@ -1,10 +1,10 @@
 package org.ay.demir.kuran.acik.repository;
 
-import org.ay.demir.kuran.acik.model.AKuranRootChars;
+import org.ay.demir.kuran.acik.model.RootDiff;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AKuranRootCharsRepository extends CrudRepository<AKuranRootChars, Long> {
+public interface RootDiffRepository extends CrudRepository<RootDiff, Long> {
 
 }
