@@ -2,31 +2,29 @@ package org.ay.demir.kuran.acik;
 
 import java.util.List;
 
-import org.ay.demir.kuran.acik.model.Audio;
-import org.ay.demir.kuran.acik.model.Author;
-import org.ay.demir.kuran.acik.model.RootChar;
-import org.ay.demir.kuran.acik.model.RootDiff;
-import org.ay.demir.kuran.acik.model.RootWord;
-import org.ay.demir.kuran.acik.model.Surah;
-import org.ay.demir.kuran.acik.model.TranslationFootNote;
-import org.ay.demir.kuran.acik.model.Translation;
-import org.ay.demir.kuran.acik.model.Verse;
-import org.ay.demir.kuran.acik.model.Word;
-import org.ay.demir.kuran.acik.service.AudioService;
-import org.ay.demir.kuran.acik.service.AuthorService;
-import org.ay.demir.kuran.acik.service.RootCharService;
-import org.ay.demir.kuran.acik.service.SurahService;
-import org.ay.demir.kuran.acik.service.TranslationFootNotesService;
-import org.ay.demir.kuran.acik.service.TranslationService;
-import org.ay.demir.kuran.acik.service.VerseService;
-import org.ay.demir.kuran.acik.service.WordService;
+import org.ay.demir.kuran.acik.model.Ayet;
+import org.ay.demir.kuran.acik.model.Harf;
+import org.ay.demir.kuran.acik.model.Kelime;
+import org.ay.demir.kuran.acik.model.KokKelime;
+import org.ay.demir.kuran.acik.model.KokKelimeGrup;
+import org.ay.demir.kuran.acik.model.Meal;
+import org.ay.demir.kuran.acik.model.MealDipNot;
+import org.ay.demir.kuran.acik.model.Sure;
+import org.ay.demir.kuran.acik.model.Yazar;
+import org.ay.demir.kuran.acik.service.AyetService;
+import org.ay.demir.kuran.acik.service.HarfService;
+import org.ay.demir.kuran.acik.service.KelimeService;
+import org.ay.demir.kuran.acik.service.KokKelimeGrupService;
+import org.ay.demir.kuran.acik.service.KokKelimeGrupServiceUpdate;
+import org.ay.demir.kuran.acik.service.MealService;
+import org.ay.demir.kuran.acik.service.SureService;
+import org.ay.demir.kuran.acik.service.YazarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,118 +32,112 @@ import org.springframework.web.bind.annotation.RestController;
 public class AcikKuranController {
 
 	@Autowired
-	private AuthorService authorsService;
+	private YazarService yazarService;
 
 	@Autowired
-	private SurahService surahService;
+	private SureService sureService;
 
 	@Autowired
-	private RootCharService rootCharsService;
+	private HarfService harfService;
 
 	@Autowired
-	private VerseService verseService;
+	private AyetService ayetService;
 
 	@Autowired
-	private TranslationService translationService;
+	private MealService mealService;
 
 	@Autowired
-	private TranslationFootNotesService footNotesService;
+	private KelimeService kelimeService;
 
 	@Autowired
-	private WordService wordsService;
+	private KokKelimeGrupService kokKelimeGrupService;
 
 	@Autowired
-	private AudioService audioService;
+	private KokKelimeGrupServiceUpdate ss;
 
-	@PostMapping(path = "/authors/download")
+	@PostMapping(path = "/yazar/download")
 	public void downloadAuthors() throws Exception {
-		authorsService.downloadAuthors();
+		yazarService.indir();
 	}
 
-	@GetMapping(path = "/authors/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Author>> getAllAuthors() {
-		return ResponseEntity.ok(authorsService.getAll());
+	@GetMapping(path = "/yazar/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Yazar>> getAllAuthors() {
+		return ResponseEntity.ok(yazarService.getAll());
 	}
 
-	@PostMapping(path = "/surahs/download")
+	@PostMapping(path = "/sure/download")
 	public void downloadSurahs() throws Exception {
-		surahService.downloadSurahs();
+		sureService.indir();
 	}
 
-	@GetMapping(path = "/surahs/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Surah>> getAllSurahs() {
-		return ResponseEntity.ok(surahService.getAll());
+	@GetMapping(path = "/sure/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Sure>> getAllSurahs() {
+		return ResponseEntity.ok(sureService.getAll());
 	}
 
-	@PostMapping(path = "/rootchars/download")
+	@PostMapping(path = "/harf/download")
 	public void downloadRootChars() throws Exception {
-		rootCharsService.downloadRootChars();
+		harfService.indir();
 	}
 
-	@GetMapping(path = "/rootchars/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<RootChar>> getAllRootChars() {
-		return ResponseEntity.ok(rootCharsService.getAll());
+	@GetMapping(path = "/harf/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Harf>> getAllRootChars() {
+		return ResponseEntity.ok(harfService.getAll());
 	}
 
-	@PostMapping(path = "/verses/download")
+	@PostMapping(path = "/ayet/download")
 	public void downloadVerses() throws Exception {
-		verseService.downloadVerses();
+		ayetService.indir();
 	}
 
-	@GetMapping(path = "/verses/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Verse>> getAllVerses() {
-		return ResponseEntity.ok(verseService.getAll());
+	@GetMapping(path = "/ayet/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Ayet>> getAllVerses() {
+		return ResponseEntity.ok(ayetService.getAll());
 	}
 
-	@PostMapping(path = "/translations/download")
+	@PostMapping(path = "/meal/download")
 	public void downloadTranslations() throws Exception {
-		translationService.downloadTranslations();
+		mealService.indir();
 	}
 
-	@GetMapping(path = "/translations/getByAuthor", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Translation>> getTranslationsByAuthor(@RequestParam("authorId") Long authorId)
-			throws Exception {
-		return ResponseEntity.ok(translationService.getByAuthorId(authorId));
+	@GetMapping(path = "/meal/getByYazar", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Meal>> getTranslationsByAuthor(Long yazarId) throws Exception {
+		return ResponseEntity.ok(mealService.getByYazarId(yazarId));
 	}
 
-	@PostMapping(path = "/words/download")
+	@GetMapping(path = "/meal/getAllMealDipNot", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MealDipNot>> getAllTranslationFootNotes() throws Exception {
+		return ResponseEntity.ok(mealService.getAllDipNot());
+	}
+
+	@PostMapping(path = "/kelime/download")
 	public void downloadWords() throws Exception {
-		wordsService.downloadWords();
+		kelimeService.indir();
 	}
 
-	@GetMapping(path = "/words/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Word>> getAllWords() throws Exception {
-		return ResponseEntity.ok(wordsService.getAllWords());
+	@GetMapping(path = "/kelime/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Kelime>> getAllWords() throws Exception {
+		return ResponseEntity.ok(kelimeService.getAllKelime());
 	}
 
-	@PostMapping(path = "/verses/downloadTranslationFootNotes")
-	public void downloadTranslationFootNotes() throws Exception {
-		footNotesService.downloadTranslationFootNotes();
+	@GetMapping(path = "/kelime/getAllRootWords", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<KokKelime>> getAllRootWords() throws Exception {
+		return ResponseEntity.ok(kelimeService.getAllKokKelime());
 	}
 
-	@GetMapping(path = "/verses/getAllTranslationFootNotes", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TranslationFootNote>> getAllTranslationFootNotes() throws Exception {
-		return ResponseEntity.ok(footNotesService.getAllFootNotes());
-	}
-
-	@GetMapping(path = "/words/getAllRootDiffs", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<RootDiff>> getAllRootDiffs() throws Exception {
-		return ResponseEntity.ok(wordsService.getAllRootDiffs());
-	}
-
-	@GetMapping(path = "/words/getAllRootWords", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<RootWord>> getAllRootWords() throws Exception {
-		return ResponseEntity.ok(wordsService.getAllRootWords());
-	}
-
-	@PostMapping(path = "/words/downloadRootDiffs")
+	@PostMapping(path = "/kelime/downloadRootDiffs")
 	public void downloadRootDiffs() throws Exception {
-		wordsService.downloadRootDiffs();
+		kokKelimeGrupService.indir();
 	}
 
-	@GetMapping(path = "/audio/getAllAudio", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Audio>> getAllAudio() throws Exception {
-		return ResponseEntity.ok(audioService.getAll());
+	@GetMapping(path = "/kelime/getAllRootDiffs", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<KokKelimeGrup>> getAllRootDiffs() throws Exception {
+		return ResponseEntity.ok(kokKelimeGrupService.getAll());
+	}
+
+	@PostMapping(path = "/test/test12345")
+	public void test12345() throws Exception {
+		ss.indir();
 	}
 
 }
